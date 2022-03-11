@@ -1,20 +1,21 @@
 import pandas as pd
-
-import csv
-
-def ema(N, p):
-    alfa = 1- 2/(N+1)
-
-    for i in range(p):
-        print(p)
+import matplotlib.pyplot as plt
 
 
-data = pd.read_csv('dane2.csv') #import data
-
-#print (data.loc[2:6,['open']])
-#print(csvFile) #print data
+from func import *
 
 
+data = pd.read_csv('dane3.csv', usecols=[0, 1], delimiter=';')  # import data
 
 
+calcMACD(data)
+calcSignal(data)
+print(data)
 
+plt.plot(data['Time'], data['MACD'])
+plt.plot(data['Time'], data['SIGNAL'])
+
+plt.xlabel('Time')
+plt.ylabel('Open')
+plt.title("MACD graph")
+plt.show()
