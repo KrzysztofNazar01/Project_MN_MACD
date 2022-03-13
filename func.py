@@ -3,7 +3,7 @@ SIZE = 1000
 # N - number of periods
 # ind - index of the day for which the EMA is calculated
 # data - data set from csv
-import numpy
+
 from matplotlib import pyplot as plt
 import pandas as pd
 
@@ -52,14 +52,14 @@ def calcCross(data):
 
     state = True
     value = 0
-    for i in range(0, SIZE-1):
+    for i in range(0, SIZE - 1):
         temp_value = 0
         temp_state = True
         s = data2['SIGNAL'].loc[data2.index[i]]
         m = data2['MACD'].loc[data2.index[i]]
 
         temp_value += m
-        #print('\n\n', i, ' m: ', m, 's: ', s)
+        # print('\n\n', i, ' m: ', m, 's: ', s)
 
         if (s - m) > 0:
             temp_state = False
@@ -69,9 +69,9 @@ def calcCross(data):
         # there must be change of state and
         # the difference in value must be greater
         # than 15% of the maximum value in the analyzed time period
-        if temp_state != state and diff_value > 0.30*float(Y[0]): # then draw vertical line
+        if temp_state != state and diff_value > 0.30 * float(Y[0]):  # then draw vertical line
             X = [data2['Time'].loc[data2.index[i]], data2['Time'].loc[data2.index[i]]]
-            if state:
+            if state == True:
                 plt.plot(X, Y, color='green')
             else:
                 plt.plot(X, Y, color='red')
@@ -81,7 +81,85 @@ def calcCross(data):
             state = temp_state
 
 
+def calcBuySell(data, amount, money):
+    state = True
+    value = 0
+    last_value = data['Open'].loc[data.index[0]]
+    for i in range(0, SIZE - 1):
+        temp_value = 0
+        temp_state = True
+        s = data['SIGNAL'].loc[data.index[i]]
+        m = data['MACD'].loc[data.index[i]]
+
+        temp_value += m
+
+        if (s - m) > 0:
+            temp_state = False
+
+        diff_value = abs(value - temp_value)
+        curr_val = data['Open'].loc[data.index[i]]
+
+        # there must be change of state and
+        # the difference in value must be greater
+        # than 15% of the maximum value in the analyzed time period
+        if temp_state != state:  # then draw vertical line
+            if state == True:
+                amount, money, last_value = sell(amount, money, curr_val, last_value)
+            else:
+                amount, money, last_value = buy(amount, money, curr_val, last_value)
+
+            # save the new state and value
+            value = temp_value
+            state = temp_state
+
+        #on the last day sell everything to maximise the amount of money(profit)
+        if i == SIZE-1 and amount != 0:
+            money += round(amount * curr_val, 2)
+            amount = 0
+
+    return amount, money
+
+
+def buy(amount, money, val, last_value):
+    if val < last_value and money != 0:
+        print('BUY: for ', val)
+        print('BEFORE: amount= ', amount, 'money=', money)
+
+        amount = money / val
+        money -= round(amount * val, 2)
+
+        print('AFTER: amount= ', amount, 'money=', money, '\n')
+        last_value = val
+    return amount, money, last_value
+
+
+def sell(amount, money, val, last_value):
+    if (val > last_value and amount != 0):
+        print('SELL for', val)
+        print('BEFORE: amount= ', amount, 'money=', money)
+
+        money += round(amount * val, 2)
+        amount = 0
+
+        print('AFTER: amount= ', amount, 'money=', money, '\n')
+        last_value = val
+    return amount, money, last_value
+
+
+def calcDiff(data):
+    data['DIFF'] = 0
+
+    for i in range(0, SIZE - 1):
+        s = data['SIGNAL'].loc[data.index[i]]
+        m = data['MACD'].loc[data.index[i]]
+
+        data.loc[i:i, 'DIFF'] = m - s
+        # print('diff: ', m-s)
+    plt.plot(data.loc[0:SIZE, 'Time'], data.loc[0:SIZE, 'DIFF'], label='DIFF', linewidth=0.3)
+
+
 def showGraph():
+    plt.legend(loc="upper left")
     plt.xlabel('Time')
     plt.ylabel('Open')
     plt.title("MACD graph")
