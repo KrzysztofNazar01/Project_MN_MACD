@@ -12,10 +12,10 @@ for ind in range(CSV_COUNT):
     calcDiff(data)
 
 
-    #saveGraph(data,'Close', 'Close value graph','blue', ind)
-    #saveGraphMS(data, ind, True)
-    #saveGraphMS(data,ind, False)
-    #saveGraph(data,'DIFF', 'DIFF value graph','indigo', ind)
+    saveGraph(data,'Close', 'Close value graph','blue', ind)
+    saveGraph(data,'DIFF', 'DIFF value graph','indigo', ind)
+    saveGraphMS(data,ind, False)
+    saveGraphMS(data, ind, True)
 
     max_val = 0
     max_i = 0

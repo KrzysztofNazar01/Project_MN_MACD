@@ -6,6 +6,8 @@ import pandas as pd
 CSV_ROW_COUNT = 1000
 CSV_COUNT = 15
 
+#define used plot style
+plt.style.use('Solarize_Light2')
 # N - number of periods
 # ind - index of the day for which the EMA is calculated
 # data - data set from csv
@@ -71,11 +73,12 @@ def calcCrossXDays(data, days):
             countXDays += 1
 
         if countXDays >= days and crossHappened:  # then draw vertical line
-            X = [data['Time'].loc[data.index[i]], data['Time'].loc[data.index[i]]]
+            t = pd.DatetimeIndex(data.loc[i:i, 'Time'])
+            X = [t,t]
             if MACDIsUpper == True:
-                plt.plot(X, Y, color='green')  # buy
+                plt.plot(X, Y, color='green', linewidth=0.5)  # buy
             else:
-                plt.plot(X, Y, color='red')  # sell
+                plt.plot(X, Y, color='red', linewidth=0.5)  # sell
             crossHappened = False
 
 
@@ -156,7 +159,7 @@ def calcDiff(data):
 
 
 def saveGraph(data, ylab, tit, col, ind):
-    plt.plot(pd.DatetimeIndex(data.loc[0:CSV_ROW_COUNT, 'Time']), data.loc[0:CSV_ROW_COUNT, ylab], label=ylab, color=col)
+    plt.plot(pd.DatetimeIndex(data.loc[0:CSV_ROW_COUNT, 'Time']), data.loc[0:CSV_ROW_COUNT, ylab], label=ylab, color=col, linewidth=0.7)
     plt.legend(loc="upper left")
     plt.xlabel('Time')
     plt.ylabel(ylab)
@@ -169,8 +172,8 @@ def saveGraph(data, ylab, tit, col, ind):
     plt.close()
 
 def saveGraphMS(data, ind, withCross = False):
-    plt.plot(pd.DatetimeIndex(data.loc[0:CSV_ROW_COUNT, 'Time']), data.loc[0:CSV_ROW_COUNT, 'MACD'], label='MACD', color='orange')
-    plt.plot(pd.DatetimeIndex(data.loc[0:CSV_ROW_COUNT, 'Time']), data.loc[0:CSV_ROW_COUNT, 'SIGNAL'], label='SIGNAL', color='black')
+    plt.plot(pd.DatetimeIndex(data.loc[0:CSV_ROW_COUNT, 'Time']), data.loc[0:CSV_ROW_COUNT, 'MACD'], label='MACD', color='orange', linewidth=0.7)
+    plt.plot(pd.DatetimeIndex(data.loc[0:CSV_ROW_COUNT, 'Time']), data.loc[0:CSV_ROW_COUNT, 'SIGNAL'], label='SIGNAL', color='cyan', linewidth=0.7)
     title = 'MACD AND SIGNAL '+ str(ind)
 
     if withCross:
