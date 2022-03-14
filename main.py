@@ -1,23 +1,33 @@
-from func import *
+from func2 import *
 
-money = 1000
-amount = 0
+for ind in range(9):
+    filename = 'dane/dane_' + str(ind) + '.csv'
+    colnames=['Time','Open','High','Low','Close','Volume']
+    data = pd.read_csv(filename,  names=colnames,  nrows=SIZE)  # import data
 
-data = pd.read_csv('dane3.csv', usecols=[0, 1], delimiter=';')  # import data
+    calcMACD(data)
+    calcSignal(data)
+    calcDiff(data)
 
-calcMACD(data)
-calcSignal(data)
-#print(data)
 
-#plot MACD and SIGNAL line
-plt.plot(data.loc[0:SIZE,'Time'], data.loc[0:SIZE,'MACD'], label='MACD')
-plt.plot(data.loc[0:SIZE,'Time'], data.loc[0:SIZE,'SIGNAL'], label='SIGNAL')
+    #saveGraph(data,'Close', 'Close value graph','blue', ind)
+    #saveGraphMS(data, ind, True)
+    #saveGraphMS(data,ind, False)
+    #saveGraph(data,'DIFF', 'DIFF value graph','indigo', ind)
 
-#calcDiff(data)
-calcCross(data)
+    max_val = 0
+    max_i = 0
+    for i in range(30):
+        amount, money = 0,100
+        amount,money = calcBuySellXdays(data,amount,money, i)
 
-amount,money = calcBuySell(data,amount,money)
+        if amount != 0:    #check last day
+            #print('LAST DAY SELLING')
+            money += round(amount * data['Close'].loc[data.index[SIZE-1]], 2)
+            amount = 0
 
-print('amount= ', amount, 'money=', money)
+        if max_val < money:
+            max_val = money
+            max_i = i
 
-#showGraph()
+    print('i:',max_i, '\tmoney=', max_val)

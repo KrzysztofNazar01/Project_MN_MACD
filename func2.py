@@ -1,7 +1,7 @@
 #import librarys
 from matplotlib import pyplot as plt
 import pandas as pd
-
+import numpy as np
 #set number of rows analyzed from csv file
 SIZE = 1000
 
@@ -40,6 +40,7 @@ def calcSignal(data):
 # data - data set from csv
 # days - for how many days MACD line must be below or under SIGNAL line to generate buy or sell signal
 def calcCrossXDays(data, days):
+
     Y = [0, 0]  # height of the vertical line
 
     # set height of vertical line
@@ -150,15 +151,36 @@ def calcDiff(data):
     for i in range(0, SIZE - 1):
         s = data['SIGNAL'].loc[data.index[i]]
         m = data['MACD'].loc[data.index[i]]
-
         data.loc[i:i, 'DIFF'] = m - s
-        # print('diff: ', m-s)
-    plt.plot(data.loc[0:SIZE, 'Time'], data.loc[0:SIZE, 'DIFF'], label='DIFF', linewidth=0.3)
 
 
-def showGraph():
+
+def saveGraph(data, ylab, tit, col, ind):
+    plt.plot(data.loc[0:SIZE, 'Time'], data.loc[0:SIZE, ylab], label=ylab, color=col)
     plt.legend(loc="upper left")
     plt.xlabel('Time')
-    plt.ylabel('Close')
-    plt.title("MACD graph")
-    plt.show()
+    plt.ylabel(ylab)
+
+    title =  tit + '_' + str(ind)
+    savename = 'saved/' + title + '.png'
+
+    plt.title(title)
+    plt.savefig(savename, dpi=200)
+    plt.close()
+
+def saveGraphMS(data, ind, withCross = False):
+    plt.plot(data.loc[0:SIZE, 'Time'], data.loc[0:SIZE, 'MACD'], label='MACD', color='orange')
+    plt.plot(data.loc[0:SIZE, 'Time'], data.loc[0:SIZE, 'SIGNAL'], label='SIGNAL', color='black')
+    title = 'MACD AND SIGNAL '+ str(ind)
+
+    if withCross:
+        calcCrossXDays(data,3)
+        title = 'MACD_and_SIGNAL_with_bars ' + str(ind)
+
+    savename = 'saved/' + title + '.png'
+    plt.title(title)
+    plt.legend(loc="upper left")
+    plt.xlabel('Time')
+    plt.ylabel('Value')
+    plt.savefig(savename, dpi=200)
+    plt.close()
