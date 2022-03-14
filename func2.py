@@ -1,10 +1,10 @@
 #import librarys
 from matplotlib import pyplot as plt
 import pandas as pd
-import numpy as np
-#set number of rows analyzed from csv file
-SIZE = 1000
 
+#set number of rows analyzed from csv file
+CSV_ROW_COUNT = 1000
+CSV_COUNT = 15
 
 # N - number of periods
 # ind - index of the day for which the EMA is calculated
@@ -27,14 +27,14 @@ def calcMACD(data):
     data['MACD'] = 0  # initialize new column
     N1 = 12  # period 1
     N2 = 26  # period 2
-    for i in range(SIZE):
+    for i in range(CSV_ROW_COUNT):
         if (i - N2) > 0:
             data.loc[i:i, 'MACD'] = calcEMA(N1, i, data, 'Close') - calcEMA(N2, i, data, 'Close')
 
 # data - data set from csv
 def calcSignal(data):
     data['SIGNAL'] = 0
-    for i in range(SIZE):
+    for i in range(CSV_ROW_COUNT):
         data.loc[i:i, 'SIGNAL'] = calcEMA(9, i, data, 'MACD')
 
 # data - data set from csv
@@ -54,7 +54,7 @@ def calcCrossXDays(data, days):
     if (data['SIGNAL'].loc[data.index[0]] - data['MACD'].loc[data.index[0]]) > 0:
         MACDIsUpper = False
 
-    for i in range(0, SIZE - 1):
+    for i in range(0, CSV_ROW_COUNT - 1):
         temp_MACDIsUpper = True
         s = data['SIGNAL'].loc[data.index[i]]
         m = data['MACD'].loc[data.index[i]]
@@ -92,7 +92,7 @@ def calcBuySellXdays(data, amount, money, days):
 
     last_value = data['Close'].loc[data.index[0]]
 
-    for i in range(0, SIZE - 1):
+    for i in range(0, CSV_ROW_COUNT - 1):
         temp_value = 0
         s = data['SIGNAL'].loc[data.index[i]]
         m = data['MACD'].loc[data.index[i]]
@@ -112,16 +112,16 @@ def calcBuySellXdays(data, amount, money, days):
 
         # there must be change of state
         if count3Days >= days and crossHappened:# then draw vertical line
-            if MACDIsUpper:
+            if MACDIsUpper == True and m > 0:
                 amount, money, last_value = buy(amount, money, curr_val, last_value)
-            else:
+            elif MACDIsUpper == False and m < 0:
                 amount, money, last_value = sell(amount, money, curr_val, last_value)
 
             # save the new state and value
             crossHappened = False
 
         # on the last day sell everything to maximise the amount of money(profit)
-        if i == SIZE - 1 and amount != 0:
+        if i == CSV_ROW_COUNT - 1 and amount != 0:
             money += round(amount * curr_val, 2)
             amount = 0
 
@@ -148,7 +148,7 @@ def sell(amount, money, val, last_value):
 def calcDiff(data):
     data['DIFF'] = 0
 
-    for i in range(0, SIZE - 1):
+    for i in range(0, CSV_ROW_COUNT - 1):
         s = data['SIGNAL'].loc[data.index[i]]
         m = data['MACD'].loc[data.index[i]]
         data.loc[i:i, 'DIFF'] = m - s
@@ -156,7 +156,7 @@ def calcDiff(data):
 
 
 def saveGraph(data, ylab, tit, col, ind):
-    plt.plot(data.loc[0:SIZE, 'Time'], data.loc[0:SIZE, ylab], label=ylab, color=col)
+    plt.plot(pd.DatetimeIndex(data.loc[0:CSV_ROW_COUNT, 'Time']), data.loc[0:CSV_ROW_COUNT, ylab], label=ylab, color=col)
     plt.legend(loc="upper left")
     plt.xlabel('Time')
     plt.ylabel(ylab)
@@ -169,13 +169,13 @@ def saveGraph(data, ylab, tit, col, ind):
     plt.close()
 
 def saveGraphMS(data, ind, withCross = False):
-    plt.plot(data.loc[0:SIZE, 'Time'], data.loc[0:SIZE, 'MACD'], label='MACD', color='orange')
-    plt.plot(data.loc[0:SIZE, 'Time'], data.loc[0:SIZE, 'SIGNAL'], label='SIGNAL', color='black')
+    plt.plot(pd.DatetimeIndex(data.loc[0:CSV_ROW_COUNT, 'Time']), data.loc[0:CSV_ROW_COUNT, 'MACD'], label='MACD', color='orange')
+    plt.plot(pd.DatetimeIndex(data.loc[0:CSV_ROW_COUNT, 'Time']), data.loc[0:CSV_ROW_COUNT, 'SIGNAL'], label='SIGNAL', color='black')
     title = 'MACD AND SIGNAL '+ str(ind)
 
     if withCross:
         calcCrossXDays(data,3)
-        title = 'MACD_and_SIGNAL_with_bars ' + str(ind)
+        title = 'MACD_and_SIGNAL_with_bars_' + str(ind)
 
     savename = 'saved/' + title + '.png'
     plt.title(title)
