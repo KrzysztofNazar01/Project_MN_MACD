@@ -286,3 +286,6 @@ In fourteen other cases, an increase was achieved, the highest (more than 15-fol
 It is worth noting that as the length of the buffer period increases, the number of buy and sell signals generated decreases. This is due to the fact that the state when the MACD line is above or below the SIGNAL line usually lasts only a dozen or so days. For a value of, for example, 30 days, there may be a situation where the entrepreneur will not buy any shares during the period of 3 years, because the lines will not cross each other for the entire month. It is too long. On this basis, I believe that the analyzed interval of the study of the best buffer period length was selected appropriately.
 
 The MACD indicator works well in the long run. It is sensitive to rapid changes in stock value trends. If the value of a stock has recently fluctuated sharply and the MACD values ​​are rising, you can expect a change in the trend of the value of the stock. It is worth emphasizing once again that in order to obtain the best financial results, the entrepreneur must use other sources of information and indicators to have a broader perspective on the prevailing situation on the stock exchange.
+
+## Future improvements
+The results of this project could be used as an input to AI tools, such as Neural Network, in order to make decisions with higher probability of success.
