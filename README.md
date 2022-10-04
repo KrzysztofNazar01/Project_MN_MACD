@@ -1,39 +1,38 @@
-# <center> Metody Numeryczne – Projekt 1</center>
-## <center>Krzysztof Nazar, 184698</center>
-### <center>26 marca 2022</center>
+# MACD value indicator - trend-following momentum indicator
+
+Author: Krzysztof Nazar
 
 
+## 1. Introduction
+**The MACD (Moving Average Convergence Divergence) indicator is a trend dynamics indicator created in the 70s by Gerald Appel. The MACD indicator is based on two lines: the Moving Average Convergence Divergence line (MACD) and the signal line (SIGNAL). The lines allow you to analyze the profitability of selling or buying a given share**
 
-## 1. Wstęp
-Wskaźnik MACD (ang. Moving Average Convergence Divergence) to wskaźnik dynamiki trendów stworzony w latach 70-tych przez Gerald'a Appel'a. Wskaźnik MACD jest oparty na dwóch liniach: linii MACD oraz linii sygnału(SIGNAL). Linie pozwalają na analizę opłacalności sprzedaży lub kupna danej akcji
-
-## 2. Podstawa teoretyczna
-Do wyznaczania wartości wskaźnika MACD wykorzystuje się tzw. wykładniczą średnią krocząca. W celu obliczenia wartości wykładniczej kroczącej dla N okresów wykorzystuje się poniższy wzór:
+## 2. Theoretical background
+To determine the value of the MACD indicator, the so-called exponential moving average. The following formula is used to calculate the rolling exponential for N periods:
 
 $$ {EMA}_N=\frac{p_0+\left(1-\alpha\right)p_1+\ldots+\left(1-\alpha\right)^Np_N}{\left(1-\alpha\right)_.+\ldots+\left(1-\alpha\right)^N} $$
 
-gdzie:
+where:
 
-$ \alpha=\ \frac{2}{N-1} $ 
+α = 2/(N-1)
 
-$ N $ – liczba okresów
+N --> number of periods
 
-$ p_i $ – wartość danej sprzed i dni
-
-
-Wskaźnik MACD jest oparty na dwóch liniach. Pierwsza z nich to linia MACD wyznaczana jako różnica dwóch wykładniczych średnich kroczących(ang. EMA, Exponential Moving Average). MACD w można obliczyć za pomocą wzoru:
-
-$$ MACD={EMA}_{12}-\ {EMA}_{26} $$
-
-Drugą linią jest linia sygnału wyznaczana jako 9-dniowa wartość EMA obliczana z na podstawie wartości wskaźnika MACD. 
-
-Dzięki tym dwóm liniom można ocenić czy warto kupować lub sprzedawać akcje. Jeśli linia MACD przebija od dołu linię sygnału – warto kupować. Natomiast jeśli linia MACD przebija linie sygnału od góry – warto sprzedawać. Zwykle, linie MACD oraz SIGNAL przebiegają zwykle bardzo blisko siebie, przez co często się przecinają, więc równie często generowane są odpowiednie sygnały kupna i sprzedaży. 
+p_i --> value *i* days before
 
 
-## 3. Zadanie projektowe
-Zadanie polegało na implementacji wskaźnika MACD wraz z oceną użyteczności. Zadanie wykonałem przy użyciu języka Python. Wykorzystałem biblioteki pandas oraz matplotlib. Dane wejściowe to wektor o długości 1000 zapisany w pliku w formacie CSV. Wszystkie pliki zostały pobrane ze [strony](https://eatradingacademy.com/software/forex-historical-data/) udostępniającej historyczne dane giełdowe , a następnie zapisane w folderze „dane”. W wektorze danych zapisane są informację o cenie zamknięcia w poszczególnych dniach. Dane przedstawiają wartość akcji przez ostatnie kilka lat.
+The MACD indicator is based on two lines. The first is the MACD line, determined as the difference between the two Exponential Moving Average (EMA). The MACD w can be calculated by the formula:
 
-Wartość EMA obliczana jest za pomocą funkcji *CalcEMA*:
+$$ MACD={EMA_{12}}-\ {EMA_{26}} $$
+
+The second line is the signal line defined as the 9-day EMA value calculated from the MACD value.
+
+Thanks to these two lines, you can judge whether it is worth buying or selling stocks. If the MACD line breaks the signal line from the bottom - it's worth buying. On the other hand, if the MACD line breaks the signal lines from the top - it's worth selling. Usually, the MACD and SIGNAL lines tend to run very close to each other and therefore often cross each other, so the appropriate buy and sell signals are also generated.
+
+
+## 3. The goal of the project
+The goal of the project was to implement the MACD indicator along with the utility evaluation. I performed the task using Python. I used the pandas and matplotlib libraries. The input data is a 1000-length vector saved in a CSV file. All files were downloaded from [website] (https://eatradingacademy.com/software/forex-historical-data/) providing historical stock data, and then saved in the "data" folder. The data vector contains information about the closing price for each day. The data shows the value of shares over the past few years.
+
+The EMA value is calculated using the *CalcEMA* function:
 
 
 ```python
@@ -49,8 +48,7 @@ def calcEMA(N, ind, data, colName):
     return (num / den)
 ```
 
-Wartości wskaźnika MACD oraz linii SIGNAL dla poszczególnych dni obliczane są odpowiednio na podstawie funkcji *CalcMACD* oraz *calcSignal*:
-
+The values of the MACD indicator and the SIGNAL line for individual days are calculated on the basis of the *CalcMACD* and *calcSignal* functions, respectively:
 
 ```python
 def calcMACD(data):
@@ -70,25 +68,25 @@ def calcSignal(data):
         data.loc[i:i, 'SIGNAL'] = calcEMA(9, i, data, 'MACD')
 ```
 
-## 4. Analiza danych
+## 4. Data analysis
 
-Z moich obserwacji wynika, że wskaźnik MACD jest czuły na gwałtowne zmiany trendów. Jeśli następują szybkie wahania cen, widoczne jest to jako wysokie piki na wykresie przedstawiającym wartość wskaźnika. Zauważyłem, że w analizowanych wykresach raptowna zmiana wartości akcji występuje z powodu pandemii, która niekorzystnie wpłynęła na stan globalnego rynku. 
+From my observations, the MACD indicator is sensitive to sudden changes in trends. If there is a rapid fluctuation in price, this is shown as high peaks in the chart showing the value of the indicator. I noticed that in the analyzed charts, the sharp change in the value of shares occurs due to a pandemic that has adversely affected the state of the global market.
 
-Wykresy przedstawiające linie MACD oraz SIGNAL pokazują, że obydwie linie przecinają się relatywnie często. Można przypuszczać, że wykorzystując każdą okazję na zakup lub sprzedaż akcji, przedsiębiorca wzbogacałby się często, lecz zyskiwałby relatywnie niewielkie ilości pieniędzy. 
+The charts showing the MACD and SIGNAL lines show that both lines cross relatively frequently. It can be assumed that by taking advantage of any opportunity to buy or sell stocks, the entrepreneur would get rich frequently, but would gain relatively small amounts of money.
 
-Niestety nie ma pewności, że taki przedsiębiorca zawsze by się wzbogacał. W rzeczywistym życiu inwestowanie na giełdzie nie jest tak proste jakby mogło się wydawać. Biorąc pod uwagę tylko wskaźnik MACD, można popełnić błędy inwestycyjne. Ignorując inne narzędzia ekonomiczne można dokonać błędnej interpretacji aktualnej sytuacji na giełdzie. 
+Unfortunately, it is not certain that such an entrepreneur would always get rich. In real life, investing in the stock market is not as easy as it may seem. Considering only the MACD indicator, you can make investment mistakes. By ignoring other economic tools, you can misinterpret the current stock market situation.
 
-W celu upewnienia się, że sygnał kupa lub sprzedaży jest poprawny, przyjąłem, że sygnał kupna powinien zostać wygenerowany powyżej poziomu 0. Dzieje się tak, ponieważ wiadomo, że wartość EMA z poprzednich 12 dni jest większa niż z poprzednich 26 dni. Taka sytuacja wskazuje na tendencję wzrostową w wartości akcji. Zwiastuje to coraz wyższą wartość akcji w niedalekiej przyszłości. 
+In order to make sure that the buy or sell signal is correct, I assumed that the buy signal should be above the 0 level. This is because the previous 12 days EMA is known to be greater than the previous 26 days. This situation indicates an upward trend in the value of shares. This heralds an increasing value of shares in the near future.
 
-Co więcej, w stosowanym przeze mnie mechanizmie kupna akcji, wartość akcji musi być mniejsza niż wartość akcji, za którą ostatnio sprzedaliśmy akcje. W przypadku sprzedaży sytuacja jest odwrotna. Zakładam, że dzięki takiemu podejściu maksymalizuje się szansa na zysk.
+Moreover, in the mechanism I use to buy shares, the value of the shares must be less than the value of the share for which we recently sold the shares. In the case of sales, the opposite is true. I assume that thanks to this approach, the chance of profit is maximized.
 
-W celu uniknięcia pochopnych decyzji podejmowanych z dnia na dzień, warto poczekać z ostateczną decyzją kupna lub sprzedaży. W celu upewnienia się, że sygnał jest poprawny można wprowadzić okres buforowy. Na przykład w przypadku sygnału kupna należy wziąć pod uwagę informacje, czy linia wskaźnika jest powyżej linii sygnału od co najmniej kilku dni – dopiero po kilku dniach wygenerowany zostanie ostateczny sygnał kupna. Analogiczny mechanizm można wprowadzić w przypadku sygnału sprzedaży. Dzięki temu przedsiębiorca jest pewny, że sytuacja jest stabilna, a szansa na zarobek staje się pewniejsza.
+In order to avoid hasty decisions made overnight, it is worth waiting with the final decision to buy or sell. A buffer period can be entered to make sure that the signal is correct. For example, in the case of a buy signal, you should consider whether the indicator line has been above the signal line for at least a few days - only after a few days will the final buy signal be generated. An analogous mechanism can be introduced in the case of a sell signal. Thanks to this, the entrepreneur is sure that the situation is stable and the earning potential becomes more certain.
 
-W programie wprowadziłem funkcje analizującą aktualny stan wartości akcji oraz mechanizm sprzedaży i kupna akcji. Na początku inwestycji użytkownik posiada kapitał w wysokości 1000 jednostek waluty oraz nie posiada żadnych akcji. Inwestowanie odbywa się automatycznie na podstawie analizy wartości wskaźnika MACD zgodnie z zasadami przedstawiony powyżej. 
+In the program, I introduced functions that analyze the current state of the value of shares and the mechanism of selling and buying shares. At the beginning of the investment, the user has capital of 1,000 currency units and does not own any shares. Investing is done automatically on the basis of the MACD indicator value analysis according to the rules presented above.
 
-Baza danych posiada 15 różnych plików csv. Każdy z nich zawiera informacje o wartości innej akcji. Pliki analizowane są pojedynczo. Dla każdego z nich tworzone są 4 wykresy przedstawiające zmiany poszczególnych wartości w analizowanym przedziale czasowym. Wykresy stworzone były za pomocą poniższych funkcji.
+The database has 15 different csv files. Each of them contains information about the value of a different share. The files are analyzed individually. For each of them, 4 charts are created showing changes in individual values ​​in the analyzed time period. The charts were created using the functions below.
 
-Funckja służąca do zapisu wykresów przedstawiających wartości akcji *Close" oraz wartości różnicy pomiędzy liniami MACD oraz SIGNAL.
+Function for saving charts showing the * Close "stock values ​​and the difference between the MACD and SIGNAL lines.
 
 
 ```python
@@ -108,8 +106,7 @@ def saveGraph(data, ylab, tit, col, ind):
     plt.close()
 ```
 
-Funckja służąca do zapisu wykresów przedstawiających wartości linii MACD oraz SIGNAL. Zmienna *withCross* odpowiada za to, czy rysowane są wertykalne kreski informujące przecięciu się dwóch linii.
-
+A function for saving charts showing the values of the MACD and SIGNAL lines. The * withCross * variable is responsible for whether vertical lines are drawn indicating the intersection of two lines.
 
 ```python
 def saveGraphMS(data, ind, withCross=False):
@@ -134,34 +131,31 @@ def saveGraphMS(data, ind, withCross=False):
     plt.close()
 ```
 
-Poniżej zamieściłem przykład każdego z wykresów.
+Below is an example of each of the graphs.
 
+![obraz](https://user-images.githubusercontent.com/72522808/193766617-406e7740-6c45-4073-a725-09729741ec41.png)
+*<center> Picture 1. Graph showing changes in the value of a share. </center>*
 
-![Close value graph_4.png](attachment:41965db3-f200-412e-a20c-6a3252e195f9.png)
+$$ $$
 
-*<center> Obraz 1. Wykres przedstawiający zmiany wartości akcji. </center>*
+![obraz](https://user-images.githubusercontent.com/72522808/193766633-ebec149b-861d-42f8-a751-c15f1119133c.png)
+*<center> Picture 2. Chart showing changes in the value of the MACD indicator and the SIGNAL value. </center>*
 
+$$ $$
 
+![obraz](https://user-images.githubusercontent.com/72522808/193766691-1c50a796-3db8-457a-a603-e994ebfd1ed9.png)
+*<center> Picture 3. Chart showing changes in the value of MACD and SIGNAL values with marked places of significant intersections. </center>*
 
-![MACD AND SIGNAL 4.png](attachment:95ad5d79-1d3f-495a-9bbd-6b22cacb8971.png)
+$$ $$
 
-*<center> Obraz 2. Wykres przedstawiający zmiany wartości wskaźnika MACD oraz wartości SIGNAL. </center>*
+![obraz](https://user-images.githubusercontent.com/72522808/193766712-e04abb55-3119-4613-9ee3-78cc27c74476.png)
+*<center> Picture 4.Graph showing changes in the value of the difference between the MACD value and the SIGNAL value. </center>*
 
+$$ $$
 
-![MACD_and_SIGNAL_with_bars_4.png](attachment:1f8189ac-257d-48a3-96d8-58d567e709a3.png)
+While browsing through the sample charts posted on the Internet, I noticed that the MACD indicator chart usually includes a histogram showing the difference between the current value of the MACD and SIGNAL lines. These differences are presented in the last graph (Picture 4).
 
-*<center> Obraz 3. Wykres przedstawiający zmiany wartości wskaźnika MACD oraz wartości SIGNAL z zaznaczonymi miejscami istotnych przecięć. </center>*
-
-
-![DIFF value graph_4.png](attachment:48be1b3b-2dad-4dc6-bd69-8311bfb6ccf3.png)
-
-*<center> Obraz 4. Wykres przedstawiający zmiany wartości różnicy pomiędzy wartością wskaźnika MACD oraz wartości SIGNAL. </center>*
-
-
-
-Przeglądając przykładowe wykresy udostępniane w Internecie, zauważyłem, że do wykresu wskaźnika MACD zwykle dołączany jest histogram przedstawiający różnicę pomiędzy aktualną wartością linii MACD oraz SIGNAL. Różnice te są przedstawione na ostatnim wykresie (Obraz 4.).
-
-W celu wyznaczenia najlepszego okresu buforowego, stworzyłem funkcję *calcBestBufor* iterującą po wszystkich dostępnych plikach z danymi. Ta część kodu służy do wyznaczenia najlepszej długości okresu buforowego dla konkretnych danych. Maksymalna długość okresu buforowego wynosi 7 dni. Funkcja *calcBestBufor* korzysta z funkcji *calcBuySellXDays* obliczającej zysk po danym okresie czasu. Funkcja ta przyjmuje parametr *days* informujący o tym, przez ile dni linie MACD oraz SINGAL nie mogą się przecinać, żeby doszło do sprzedaży lub kupna. 
+In order to find the best buffer period, I created the * calcBestBufor * function iterating over all available data files. This part of the code is used to determine the best buffer period length for specific data. The maximum buffer period is 7 days. The * calcBestBufor * function uses the * calcBuySellXDays * function to calculate the profit after a given period of time. This function takes a * days * parameter indicating how many days the MACD and SINGAL lines cannot intersect before a buy or sell occurs.
 
 
 ```python
@@ -229,9 +223,9 @@ def calcBestBufor(data):
     return bestMoney, bestBufor
 ```
 
-Aby końcowy wynik był bardziej wiarygodny, wyznaczam średnią arytmetyczną z wszystkich uzyskanych wyników cząstkowych.
+To make the final result more reliable, I calculate the arithmetic mean of all obtained partial results.
 
-Cała funkcja zamknięta jest w pętli iterującej po każdym dokumencie pozwalającą wyznaczyć wartości współczynnika MACD dla analizowanego zbioru danych. Wartości pobierane są z plików CSV umieszczonych w folderze „dane”, a wykresy zapisywane są w folderze „wykresy”. 
+The entire function is closed in a loop iterating through each document, which allows to determine the MACD coefficient values for the analyzed data set. The values are taken from CSV files located in the "data" folder, and the charts are saved in the "charts" folder.
 
 
 
@@ -261,11 +255,11 @@ print(sumBestBufor/CSV_COUNT)
 print(sumMoney / CSV_COUNT)
 ```
 
-## 5. Wnioski
+## 5. Results and conclusion
 
-Analizując długość idealnego okresu buforowego pomiędzy 0-ma a 7-dniami, średnia najlepszej długości okresu buforowego wynosi 3,(3). A więc średnio najlepszy wynik finansowy uzyskuje się przy długości okresu między 3 a 4 dni. Szczegółowe wyniki przedstawiono w poniższej tabeli. 
+When analyzing the length of an ideal buffer period between 0 and 7 days, the mean of the best buffer period length is 3, (3). So, on average, the best financial result is obtained with a period of between 3 and 4 days. Detailed results are presented in the table below.
 
-|     Id pliku csv    |     Długość w dniach najlepszego okresu buforowego    |     Końcowy stan portfela    |
+|     Id of *.csv file    |     The length in days of the best buffer period    |     The final condition of the wallet    |
 |:---:|:---:|:---:|
 |     0     |      5       |      15768.22    |
 |     1     |      2       |      762.23    |
@@ -283,12 +277,12 @@ Analizując długość idealnego okresu buforowego pomiędzy 0-ma a 7-dniami, ś
 |     13     |      3       |      1181.92    |
 |     14     |      3       |      1328.57    |
 
-*<center> Tabela 1. Najbardziej opłacalna długość okresu buforowego dla analizowanych przykładów. </center>* 
+*<center> Table 1. The most cost effective buffer period for the analyzed examples. </center>* 
 
-Średni zysk na podstawie analizowanych danych, wynosi około 1500 jednostek waluty. Wyniki uzyskane podczas analizy dwóch pierwszych plików znacząco wyróżniają się od danych uzyskanych na podstawie innych plików. Warto zauważyć, że stosowany przeze mnie mechanizm kupna i sprzedaży nie zawsze generuje zysk finansowy. Na przykład w dokumencie o id równym 1 wartość końcowa portfela była niższa niż na początku. Wynika to z tego,  że wartość tej akcji stopniowo malała w czasie, więc trudno było na niej zarobić. Co więcej, oprócz współczynnika MACD nie brano pod uwagę innych czynników ekonomicznych, które mogły znacząco wpłynąć na wartość akcji lub poinformować o nieopłacalności inwestowania w te akcje. 
+The average profit, based on the analyzed data, is approximately 1,500 currency units. The results obtained during the analysis of the first two files significantly differ from the data obtained on the basis of other files. It is worth noting that the buy and sell mechanism I use does not always generate financial profit. For example, in a document with id 1, the ending value of the portfolio was lower than it was at the beginning. This is because the share's value has gradually declined over time, so it was difficult to make a profit from it. Moreover, apart from the MACD factor, no other economic factors were taken into account that could significantly affect the value of the shares or inform about the unprofitability of investing in these shares.
 
-W czternastu innych przepadkach uzyskano wzrost, najwyższy(ponad 15-krotny) wzrost kapitału uzyskano dla danych zawartych w pliku o id równym 0. Wskazuje to na wysoki potencjał wykorzystywania wskaźnika MACD w praktyce. Wskaźnik z pewnością jest przydatny w analizie technicznej, a jego użytkownik może z niego wiele wywnioskować. Jednak w celu uzyskania jak najlepszych wyników finansowych, należy pamiętać o innych narzędziach do analizy aktualnej sytuacji giełdowej.
+In fourteen other cases, an increase was achieved, the highest (more than 15-fold) increase in capital was obtained for the data contained in the file with id equal to 0. This indicates a high potential of using the MACD indicator in practice. The indicator is certainly useful in technical analysis and its user can infer a lot from it. However, in order to obtain the best financial results, you should remember about other tools for analyzing the current stock market situation.
 
-Warto zauważyć, że wraz ze wzrostem długości okresu buforowego zmniejsza się liczba generowanych sygnałów kupna oraz sprzedaży. Wynika to z faktu, że stan gdy linia MACD jest powyżej albo poniżej linii SIGNAL trwa zwykle tylko kilkanaście dni. Dla wartości np. 30 dni może wystąpić taka sytuacja, że podczas okresu 3 lat przedsiębiorca nie kupi żadnej akcji, ponieważ nie dojdzie do sytuacji, gdy linie nie będą się ze sobą przecinać przez cały miesiąc. Jest to za długi okres. Na tej podstawie uważam, że analizowany przeze mnie przedział badania najlepszej długości okresu buforowego został wybrany odpowiednio.
+It is worth noting that as the length of the buffer period increases, the number of buy and sell signals generated decreases. This is due to the fact that the state when the MACD line is above or below the SIGNAL line usually lasts only a dozen or so days. For a value of, for example, 30 days, there may be a situation where the entrepreneur will not buy any shares during the period of 3 years, because the lines will not cross each other for the entire month. It is too long. On this basis, I believe that the analyzed interval of the study of the best buffer period length was selected appropriately.
 
-Wskaźnik MACD dobrze działa długofalowo. Jest wrażliwy na szybkie zmiany trendów wartości akcji. Jeśli wartość akcji w ostatnim czasie zmienia się gwałtownie, a wartości MACD mają tendencję wzrostową, można spodziewać się zmiany trendu wartości akcji. Warto zaznaczyć jeszcze raz, że w celu uzyskania jak najlepszych wyników finansowych, przedsiębiorca musi korzystać z innych źródeł informacji oraz wskaźników, aby posiadać szerszą pespektywę na panującą sytuację na giełdzie.
+The MACD indicator works well in the long run. It is sensitive to rapid changes in stock value trends. If the value of a stock has recently fluctuated sharply and the MACD values ​​are rising, you can expect a change in the trend of the value of the stock. It is worth emphasizing once again that in order to obtain the best financial results, the entrepreneur must use other sources of information and indicators to have a broader perspective on the prevailing situation on the stock exchange.
